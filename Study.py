@@ -1,13 +1,41 @@
-import csv
 import sys
+import csv
 
-from student import student
-from study import study, Mentor_Mentee, Study_Group
+class student():
+    def __init__(self, name:str, grade:dict) -> None:
+        self.name = name
+        self.grade = grade
+        self.is_available = True
+        for key, value in self.grade.items():
+            self.grade[key] = float(value)
+
+    def __str__(self) -> str:
+        return "이름:{name}, 성적:{grade}".format(name=self.name, grade=self.grade)
+    
+    def __repr__(self) -> str:
+        return self.name
+    
+    def update_grade(self, grade:dict) -> None:
+        self.grade = grade
+        for key, value in self.grade.items():
+            self.grade[key] = float(value)
+
+class study():
+    def __init__(self, subject:str, *students:student) -> None:
+        if type(students[0]) == list:
+            self.student_list = students[0]
+        elif type(students[0]) == student:
+            self.student_list = []
+            for std in students:
+                self.student_list.append(std)
+        self.subject = subject
+
+    def __str__(self) -> str:
+        return str(self.student_list)
 
 class main():
     def __init__(self) -> None:
         self.student_dict = dict()
-        # f = open('./Proactive Technology/student_data.csv', 'r', encoding='utf-8')
         f = open('./student_data_Gaussian.csv', 'r', encoding='utf-8')
         reader = csv.reader(f)
         for line in reader:
@@ -16,8 +44,12 @@ class main():
             temp_student = student(name, grade_dict)
             self.student_dict[name] = temp_student
         f.close()
+        self.grade_average = {}
 
     def __str__(self) -> str:
+        return str(len(self.student_dict))+"명의 학생이 포함되어 있습니다."
+
+    def __len__(self) -> str:
         return str(len(self.student_dict))+"명의 학생이 포함되어 있습니다."
 
     def available_student_list(self):
@@ -56,13 +88,8 @@ class main():
         for student_name in students:
             student_list.append(self.student_dict[student_name])
         print(student_list)
-        New_Studygroup = Study_Group(subject, student_list)
+        New_Studygroup = study(subject, student_list)
         return New_Studygroup
-
-
-
-
-
 
 if __name__ == "__main__":
     Study_Program = main()
